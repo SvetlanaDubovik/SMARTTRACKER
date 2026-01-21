@@ -61,9 +61,18 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   sort: "newest",
   search: "",
 
-  setFilter: (filter) => set({ filter }),
-  setSort: (sort) => set({ sort }),
-  setSearch: (search) => set({ search }),
+  setFilter: (filter) => {
+    if (get().filter === filter) return;
+    set({ filter });
+  },
+  setSort: (sort) => {
+    if (get().sort === sort) return;
+    set({ sort });
+  },
+  setSearch: (search) => {
+    if (get().search === search) return;
+    set({ search });
+  },
 
   addTask: (title) => {
     const trimmed = title.trim();
@@ -106,19 +115,22 @@ export const useTasksStore = create<TasksState>((set, get) => ({
 export function selectVisibleTasks(state: Pick<TasksState, "tasks" | "filter" | "sort" | "search">) {
   const q = state.search.trim().toLowerCase();
 
+  // const initialList = state.tasks;
   let list = state.tasks;
+  // let list: Task[] = [];
 
-  // filter
+  // // filter
   if (state.filter === "active") list = list.filter((t) => !t.done);
   if (state.filter === "done") list = list.filter((t) => t.done);
 
-  // search
+  // // search
   if (q) list = list.filter((t) => t.title.toLowerCase().includes(q));
 
-  // sort
+  // // sort
   if (state.sort === "newest") {
     list = [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  } else if (state.sort === "oldest") {
+  } 
+  else if (state.sort === "oldest") {
     list = [...list].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   } else if (state.sort === "priority") {
     const rank = { high: 0, medium: 1, low: 2 } as const;

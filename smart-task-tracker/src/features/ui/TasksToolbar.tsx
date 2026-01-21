@@ -11,10 +11,14 @@ export function TasksToolbar() {
 
   const [localQuery, setLocalQuery] = useState("");
 
-  const debounced = useMemo(() => debounce(setSearch, 350), [setSearch]);
+  const debounced = useMemo(
+    () => debounce((q: string) => useTasksStore.getState().setSearch(q), 350),
+    []
+  );
 
   useEffect(() => {
     debounced(localQuery);
+    return () => debounced.cancel();
   }, [localQuery, debounced]);
 
   return (
