@@ -115,9 +115,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
 export function selectVisibleTasks(state: Pick<TasksState, "tasks" | "filter" | "sort" | "search">) {
   const q = state.search.trim().toLowerCase();
 
-  // const initialList = state.tasks;
   let list = state.tasks;
-  // let list: Task[] = [];
 
   // // filter
   if (state.filter === "active") list = list.filter((t) => !t.done);
