@@ -1,139 +1,99 @@
 import { create } from "zustand";
-import type { Task, TaskPriority } from "../../../shared/types/task";
-
-type Filter = "all" | "active" | "done";
-type Sort = "newest" | "oldest" | "priority";
+import type { Filter, Sort, Task, TaskFormValues } from "../../../shared/types/task.ts";
 
 type TasksState = {
   tasks: Task[];
   filter: Filter;
   sort: Sort;
-  search: string;
+  query: string;
 
-  setFilter: (f: Filter) => void;
-  setSort: (s: Sort) => void;
-  setSearch: (q: string) => void;
+  dialogOpen: boolean;
+  editingId: string | null;
 
-  addTask: (title: string) => void;
+  // actions: ui state
+  setFilter: (v: Filter) => void;
+  setSort: (v: Sort) => void;
+  setQuery: (v: string) => void;
+
+  openCreate: () => void;
+  openEdit: (id: string) => void;
+  closeDialog: () => void;
+
+  // actions: tasks
   toggleDone: (id: string) => void;
   deleteTask: (id: string) => void;
-  editTitle: (id: string, title: string) => void;
+  submitTask: (values: TaskFormValues) => void;
 };
-
-const STORAGE_KEY = "stt_tasks_v1";
-
-function nowIso() {
-  return new Date().toISOString();
-}
 
 function uid() {
   return crypto.randomUUID?.() ?? String(Math.random()).slice(2);
 }
 
 const seedTasks: Task[] = [
-  { id: uid(), title: "Вернуть React-руки", done: false, priority: "high", createdAt: nowIso() },
-  { id: uid(), title: "Добавить фильтры и поиск", done: false, priority: "medium", createdAt: nowIso() },
-  { id: uid(), title: "Сделать README", done: false, priority: "low", createdAt: nowIso() },
+  { id: uid(), title: "Вернуть React-руки", done: false, priority: "high", dueDate: "2026-02-10" },
+  { id: uid(), title: "Добавить фильтры и поиск", done: false, priority: "medium" },
+  { id: uid(), title: "Сделать README", done: true, priority: "low" },
 ];
 
-function loadTasks(): Task[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return seedTasks;
-    const parsed = JSON.parse(raw) as Task[];
-    return Array.isArray(parsed) ? parsed : seedTasks;
-  } catch {
-    return seedTasks;
-  }
-}
-
-function saveTasks(tasks: Task[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  } catch {
-    // ignore
-  }
-}
-
 export const useTasksStore = create<TasksState>((set, get) => ({
-  tasks: loadTasks(),
+  tasks: seedTasks,
   filter: "all",
   sort: "newest",
-  search: "",
+  query: "",
 
-  setFilter: (filter) => {
-    if (get().filter === filter) return;
-    set({ filter });
-  },
-  setSort: (sort) => {
-    if (get().sort === sort) return;
-    set({ sort });
-  },
-  setSearch: (search) => {
-    if (get().search === search) return;
-    set({ search });
-  },
+  dialogOpen: false,
+  editingId: null,
 
-  addTask: (title) => {
-    const trimmed = title.trim();
-    if (!trimmed) return;
+  setFilter: (filter) => set({ filter }),
+  setSort: (sort) => set({ sort }),
+  setQuery: (query) => set({ query }),
 
-    const newTask: Task = {
-      id: uid(),
-      title: trimmed,
-      done: false,
-      priority: "medium" as TaskPriority,
-      createdAt: nowIso(),
-    };
+  openCreate: () => set({ dialogOpen: true, editingId: null }),
+  openEdit: (id) => set({ dialogOpen: true, editingId: id }),
+  closeDialog: () => set({ dialogOpen: false }),
 
-    const next = [newTask, ...get().tasks];
-    saveTasks(next);
-    set({ tasks: next });
-  },
+  toggleDone: (id) =>
+    set((s) => ({
+      tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
+    })),
 
-  toggleDone: (id) => {
-    const next = get().tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t));
-    saveTasks(next);
-    set({ tasks: next });
-  },
+  deleteTask: (id) =>
+    set((s) => ({
+      tasks: s.tasks.filter((t) => t.id !== id),
+    })),
 
-  deleteTask: (id) => {
-    const next = get().tasks.filter((t) => t.id !== id);
-    saveTasks(next);
-    set({ tasks: next });
-  },
+  submitTask: (values) => {
+    const { editingId, tasks } = get();
 
-  editTitle: (id, title) => {
-    const trimmed = title.trim();
-    if (!trimmed) return;
-    const next = get().tasks.map((t) => (t.id === id ? { ...t, title: trimmed } : t));
-    saveTasks(next);
-    set({ tasks: next });
+    // edit
+    if (editingId) {
+      set({
+        tasks: tasks.map((t) => (t.id === editingId ? { ...t, ...values } : t)),
+      });
+      return;
+    }
+
+    // create
+    const newTask: Task = { id: uid(), done: false, ...values };
+    set({ tasks: [newTask, ...tasks] });
   },
 }));
 
-export function selectVisibleTasks(state: Pick<TasksState, "tasks" | "filter" | "sort" | "search">) {
-  const q = state.search.trim().toLowerCase();
+// selector: visible tasks (filter + search + sort)
+export function selectVisibleTasks(s: Pick<TasksState, "tasks" | "filter" | "sort" | "query">) {
+  let list = s.tasks;
 
-  let list = state.tasks;
+  if (s.filter === "active") list = list.filter((t) => !t.done);
+  if (s.filter === "done") list = list.filter((t) => t.done);
 
-  // // filter
-  if (state.filter === "active") list = list.filter((t) => !t.done);
-  if (state.filter === "done") list = list.filter((t) => t.done);
-
-  // // search
+  const q = s.query.trim().toLowerCase();
   if (q) list = list.filter((t) => t.title.toLowerCase().includes(q));
 
-  // // sort
-  if (state.sort === "newest") {
-    list = [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  } 
-  else if (state.sort === "oldest") {
-    list = [...list].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-  } else if (state.sort === "priority") {
+  if (s.sort === "priority") {
     const rank = { high: 0, medium: 1, low: 2 } as const;
     list = [...list].sort((a, b) => rank[a.priority] - rank[b.priority]);
   }
 
+  // Примечание: new/oldest лучше делать по createdAt. Пока оставим стабильный порядок.
   return list;
 }

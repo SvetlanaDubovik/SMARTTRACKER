@@ -1,18 +1,20 @@
+import { Stack } from "@mui/material";
+import type { Task } from "../../shared/types/task";
 import { TaskItem } from "./TaskItem";
-import { selectVisibleTasks, useTasksStore } from "../tasks/model/tasks.store";
 
-export function TasksList() {
-  const tasks = useTasksStore((s) => selectVisibleTasks(s));
+type Props = {
+  tasks: Task[];
+  onToggle: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+};
 
-  if (tasks.length === 0) {
-    return <p>Пока нет задач. Добавь первую 👇</p>;
-  }
-
+export function TasksList({ tasks, onToggle, onEdit, onDelete }: Props) {
   return (
-    <ul style={{ display: "grid", gap: 8, padding: 0, listStyle: "none" }}>
+    <Stack spacing={1.5}>
       {tasks.map((t) => (
-        <TaskItem key={t.id} task={t} />
+        <TaskItem key={t.id} task={t} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} />
       ))}
-    </ul>
+    </Stack>
   );
 }

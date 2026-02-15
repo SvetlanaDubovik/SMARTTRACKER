@@ -1,186 +1,85 @@
-import { useState } from "react";
-import { useTasksStore } from "../tasks/model/tasks.store";
-import { TasksList } from "./TasksList";
+import { Box, Container, Typography } from "@mui/material";
+import { useMemo } from "react";
+import { useTasksStore, selectVisibleTasks } from "../tasks/model/tasks.store";
 import { TasksToolbar } from "./TasksToolbar";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Chip,
-  Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import EditOutlined from "@mui/icons-material/EditOutlined";
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
+import { TasksList } from "./TasksList";
+import { TasksEmpty } from "./TasksEmpty";
+import { TaskFormDialog } from "./TaskFormDialog";
 
 export function TasksPage() {
-  const addTask = useTasksStore((s) => s.addTask);
-  const [title, setTitle] = useState("");
+  // ui state
+  const filter = useTasksStore((s) => s.filter);
+  const sort = useTasksStore((s) => s.sort);
+  const query = useTasksStore((s) => s.query);
 
-  
+  const setFilter = useTasksStore((s) => s.setFilter);
+  const setSort = useTasksStore((s) => s.setSort);
+  const setQuery = useTasksStore((s) => s.setQuery);
+
+  // dialog
+  const dialogOpen = useTasksStore((s) => s.dialogOpen);
+  const editingId = useTasksStore((s) => s.editingId);
+  const openCreate = useTasksStore((s) => s.openCreate);
+  const openEdit = useTasksStore((s) => s.openEdit);
+  const closeDialog = useTasksStore((s) => s.closeDialog);
+  const submitTask = useTasksStore((s) => s.submitTask);
+
+  // tasks actions
+  const toggleDone = useTasksStore((s) => s.toggleDone);
+  const deleteTask = useTasksStore((s) => s.deleteTask);
+
+  // data
+  const tasks = useTasksStore((s) => s.tasks);
+  const visible = useMemo(() => selectVisibleTasks({ tasks, filter, sort, query }), [tasks, filter, sort, query]);
+
+  const editingTask = tasks.find((t) => t.id === editingId) ?? null;
 
   return (
-    // <div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
-    //   <h1>Smart Task Tracker</h1>
-
-    //   <TasksToolbar />
-
-    //   <div style={{ display: "flex", gap: 8 }}>
-    //     <input
-    //       value={title}
-    //       onChange={(e) => setTitle(e.target.value)}
-    //       placeholder="New task title…"
-    //     />
-    //     <button
-    //       onClick={() => {
-    //         addTask(title);
-    //         setTitle("");
-    //       }}
-    //     >
-    //       Add
-    //     </button>
-    //   </div>
-
-    //   <TasksList />
-    // </div>
-
-       <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 4 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 4 }}>
       <Container maxWidth="md">
-        <Stack spacing={2} sx={{ mb: 2 }}>
-          <Box>
-            <Typography variant="h4" fontWeight={600}>
-              Smart Task Tracker
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Keep tasks clear and manageable
-            </Typography>
-          </Box>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h4" fontWeight={600}>
+            Smart Task Tracker
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Keep tasks clear and manageable
+          </Typography>
+        </Box>
 
-          <Card variant="outlined" sx={{ borderRadius: 4 }}>
-            <CardContent>
-               <TasksToolbar />
-              {/* <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ md: "center" }}>
-                <TextField
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  label="Search"
-                  placeholder="Search tasks…"
-                  size="small"
-                  fullWidth
-                />
+        <Box sx={{ mb: 2 }}>
+          <TasksToolbar
+            filter={filter}
+            sort={sort}
+            query={query}
+            total={visible.length}
+            onChangeFilter={setFilter}
+            onChangeSort={setSort}
+            onChangeQuery={setQuery}
+            onAdd={openCreate}
+          />
+        </Box>
 
-                <FormControl size="small" sx={{ minWidth: 140 }}>
-                  <InputLabel>Filter</InputLabel>
-                  <Select value={filter} label="Filter" onChange={(e) => setFilter(e.target.value as Filter)}>
-                    <MenuItem value="all">All</MenuItem>
-                    <MenuItem value="active">Active</MenuItem>
-                    <MenuItem value="done">Done</MenuItem>
-                  </Select>
-                </FormControl>
+        {visible.length === 0 ? (
+          <TasksEmpty onAdd={openCreate} />
+        ) : (
+          <TasksList tasks={visible} onToggle={toggleDone} onEdit={openEdit} onDelete={deleteTask} />
+        )}
 
-                <FormControl size="small" sx={{ minWidth: 160 }}>
-                  <InputLabel>Sort</InputLabel>
-                  <Select value={sort} label="Sort" onChange={(e) => setSort(e.target.value as Sort)}>
-                    <MenuItem value="newest">Newest</MenuItem>
-                    <MenuItem value="oldest">Oldest</MenuItem>
-                    <MenuItem value="priority">Priority</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-                  {visible.length} tasks
-                </Typography>
-
-                <Box sx={{ flex: 1 }} />
-
-                <Button variant="contained" onClick={() => alert("Open modal")} sx={{ borderRadius: 3 }}>
-                  + Add task
-                </Button>
-              </Stack> */}
-            </CardContent>
-          </Card>
-        </Stack>
-
-        {/* <Stack spacing={1.5}>
-          {visible.length === 0 ? (
-            <Card variant="outlined" sx={{ borderRadius: 4 }}>
-              <CardContent sx={{ textAlign: "center", py: 6 }}>
-                <Typography fontWeight={600}>No tasks yet</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                  Create your first task to get started.
-                </Typography>
-                <Button variant="contained" sx={{ mt: 2, borderRadius: 3 }} onClick={() => alert("Open modal")}>
-                  + Add task
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            visible.map((t) => (
-              <Card key={t.id} variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Stack direction="row" spacing={1.5} alignItems="flex-start">
-                    <Checkbox
-                      checked={t.done}
-                      onChange={() =>
-                        setTasks((prev) => prev.map((x) => (x.id === t.id ? { ...x, done: !x.done } : x)))
-                      }
-                    />
-
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                        <Typography
-                          fontWeight={600}
-                          sx={{ textDecoration: t.done ? "line-through" : "none", opacity: t.done ? 0.6 : 1 }}
-                        >
-                          {t.title}
-                        </Typography>
-                        <Chip size="small" {...priorityChip(t.priority)} />
-                        {t.dueDate ? (
-                          <Typography variant="caption" color="text.secondary">
-                            due {t.dueDate}
-                          </Typography>
-                        ) : null}
-                      </Stack>
-                    </Box>
-
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="outlined"
-                        startIcon={<EditOutlined />}
-                        sx={{ borderRadius: 3 }}
-                        onClick={() => {
-                          const next = prompt("New title:", t.title);
-                          if (!next) return;
-                          setTasks((prev) => prev.map((x) => (x.id === t.id ? { ...x, title: next } : x)));
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<DeleteOutline />}
-                        sx={{ borderRadius: 3 }}
-                        onClick={() => setTasks((prev) => prev.filter((x) => x.id !== t.id))}
-                      >
-                        Delete
-                      </Button>
-                    </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))
-          )} */}
-        {/* </Stack> */}
+        <TaskFormDialog
+          key={`${editingId ?? "create"}-${dialogOpen ? "open" : "closed"}`}
+          open={dialogOpen}
+          initialValues={
+            editingTask
+              ? { title: editingTask.title, priority: editingTask.priority, dueDate: editingTask.dueDate }
+              : undefined
+          }
+          onClose={closeDialog}
+          onSubmit={(values) => {
+            submitTask(values);
+            closeDialog();
+          }}
+        />
       </Container>
     </Box>
-
   );
 }

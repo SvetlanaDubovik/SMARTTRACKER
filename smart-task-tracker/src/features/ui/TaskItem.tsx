@@ -1,36 +1,74 @@
+import { Box, Button, Card, CardContent, Checkbox, Chip, Stack, Typography } from "@mui/material";
+import EditOutlined from "@mui/icons-material/EditOutlined";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import type { Task } from "../../shared/types/task";
-import { useTasksStore } from "../tasks/model/tasks.store";
 
-type Props = { task: Task };
+function priorityChip(priority: Task["priority"]) {
+  if (priority === "high") return { label: "high", color: "error" as const, variant: "filled" as const };
+  if (priority === "medium") return { label: "medium", color: "warning" as const, variant: "filled" as const };
+  return { label: "low", color: "success" as const, variant: "filled" as const };
+}
 
-export function TaskItem({ task }: Props) {
-  const toggleDone = useTasksStore((s) => s.toggleDone);
-  const deleteTask = useTasksStore((s) => s.deleteTask);
-  const editTitle = useTasksStore((s) => s.editTitle);
+type Props = {
+  task: Task;
+  onToggle: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+};
 
+export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
   return (
-    <li style={{ display: "flex", gap: 10, alignItems: "center" }}>
-      <input
-        type="checkbox"
-        checked={task.done}
-        onChange={() => toggleDone(task.id)}
-        aria-label="toggle done"
-      />
+    <Card variant="outlined" sx={{ borderRadius: 4 }}>
+      <CardContent sx={{ "&:last-child": { pb: "19px" } }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "auto minmax(0, 1fr) 88px 110px auto",
+            columnGap: "5px",
+            alignItems: "center",
+          }}
+        >
+          <Checkbox checked={task.done} onChange={() => onToggle(task.id)} />
 
-      <span style={{ textDecoration: task.done ? "line-through" : "none", flex: 1 }}>
-        {task.title} <small>({task.priority})</small>
-      </span>
+          <Typography
+            fontWeight={600}
+            sx={{
+              minWidth: 0,
+              textDecoration: task.done ? "line-through" : "none",
+              opacity: task.done ? 0.6 : 1,
+            }}
+          >
+            {task.title}
+          </Typography>
 
-      <button
-        onClick={() => {
-          const next = prompt("New title:", task.title);
-          if (next != null) editTitle(task.id, next);
-        }}
-      >
-        Edit
-      </button>
+          <Box sx={{ justifySelf: "start" }}>
+            <Chip size="small" sx={{ borderRadius: 1 }} {...priorityChip(task.priority)} />
+          </Box>
 
-      <button onClick={() => deleteTask(task.id)}>Delete</button>
-    </li>
+          <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+            {task.dueDate ? `due ${task.dueDate}` : ""}
+          </Typography>
+
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={<EditOutlined />}
+              sx={{ borderRadius: 1, textTransform: "none" }}
+              onClick={() => onEdit(task.id)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<DeleteOutline />}
+              sx={{ borderRadius: 1, textTransform: "none" }}
+              onClick={() => onDelete(task.id)}
+            >
+              Delete
+            </Button>
+          </Stack>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }

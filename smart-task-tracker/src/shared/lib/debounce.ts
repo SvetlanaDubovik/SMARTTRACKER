@@ -1,11 +1,13 @@
-type Debounced<T extends (...args: any[]) => void> = ((...args: Parameters<T>) => void) & {
+type Debounced<Args extends unknown[]> = ((...args: Args) => void) & {
   cancel: () => void;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce<T extends (...args: any[]) => void>(fn: T, delay = 300): Debounced<T> {
+export function debounce<Args extends unknown[]>(
+  fn: (...args: Args) => void,
+  delay = 300
+): Debounced<Args> {
   let t: number | undefined;
-  const debounced = (...args: Parameters<T>) => {
+  const debounced = (...args: Args) => {
     window.clearTimeout(t);
     t = window.setTimeout(() => fn(...args), delay);
   };
