@@ -10,7 +10,7 @@ export type Task = {
 };
 
 export type Filter = "all" | "active" | "done";
-export type Sort = "newest" | "oldest" | "priority";
+export type Sort = "newest" | "oldest" | "priority" | "dueTo";
 
 export type TaskFormValues = {
   title: string;

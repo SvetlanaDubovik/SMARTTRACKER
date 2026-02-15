@@ -52,6 +52,7 @@ export function TasksToolbar({
               <MenuItem value="newest">Сначала новые</MenuItem>
               <MenuItem value="oldest">Сначала старые</MenuItem>
               <MenuItem value="priority">По приоритету</MenuItem>
+              <MenuItem value="dueTo">По сроку</MenuItem>
             </Select>
           </FormControl>
 

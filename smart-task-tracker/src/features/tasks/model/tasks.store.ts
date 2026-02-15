@@ -109,6 +109,13 @@ export function selectVisibleTasks(s: Pick<TasksState, "tasks" | "filter" | "sor
   } else if (s.sort === "priority") {
     const rank = { high: 0, medium: 1, low: 2 } as const;
     list = [...list].sort((a, b) => rank[a.priority] - rank[b.priority]);
+  } else if (s.sort === "dueTo") {
+    list = [...list].sort((a, b) => {
+      const aDue = a.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY;
+      const bDue = b.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY;
+      if (aDue !== bDue) return aDue - bDue;
+      return b.createdAt - a.createdAt;
+    });
   }
 
   return list;
