@@ -31,24 +31,24 @@ export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{initialValues ? "Edit Task" : "Create Task"}</DialogTitle>
+      <DialogTitle>{initialValues ? "Редактировать задачу" : "Создать задачу"}</DialogTitle>
 
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth required />
+          <TextField label="Название" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth required />
 
           <FormControl fullWidth>
-            <InputLabel>Priority</InputLabel>
-            <Select value={priority} label="Priority" onChange={(e) => setPriority(e.target.value as TaskPriority)}>
-              <MenuItem value="low">Low</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="high">High</MenuItem>
+            <InputLabel>Приоритет</InputLabel>
+            <Select value={priority} label="Приоритет" onChange={(e) => setPriority(e.target.value as TaskPriority)}>
+              <MenuItem value="low">Низкий</MenuItem>
+              <MenuItem value="medium">Средний</MenuItem>
+              <MenuItem value="high">Высокий</MenuItem>
             </Select>
           </FormControl>
 
           <TextField
             type="date"
-            label="Due date"
+            label="До"
             InputLabelProps={{ shrink: true }}
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
@@ -59,10 +59,10 @@ export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props
 
       <DialogActions>
         <Button onClick={onClose} sx={{ textTransform: "none" }}>
-          Cancel
+          Отмена
         </Button>
         <Button variant="contained" onClick={handleSubmit} sx={{ textTransform: "none" }}>
-          {initialValues ? "Save" : "Create"}
+          {initialValues ? "Сохранить" : "Создать"}
         </Button>
       </DialogActions>
     </Dialog>

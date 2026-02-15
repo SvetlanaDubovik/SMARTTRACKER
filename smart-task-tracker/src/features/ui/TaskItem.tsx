@@ -4,9 +4,9 @@ import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import type { Task } from "../../shared/types/task";
 
 function priorityChip(priority: Task["priority"]) {
-  if (priority === "high") return { label: "high", color: "error" as const, variant: "filled" as const };
-  if (priority === "medium") return { label: "medium", color: "warning" as const, variant: "filled" as const };
-  return { label: "low", color: "success" as const, variant: "filled" as const };
+  if (priority === "high") return { label: "высокий", color: "error" as const, variant: "filled" as const };
+  if (priority === "medium") return { label: "средний", color: "warning" as const, variant: "filled" as const };
+  return { label: "низкий", color: "success" as const, variant: "filled" as const };
 }
 
 type Props = {
@@ -17,6 +17,13 @@ type Props = {
 };
 
 export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
+  const formattedDueDate = task.dueDate
+    ? (() => {
+        const [year, month, day] = task.dueDate.split("-");
+        return `${day}-${month}-${year}`;
+      })()
+    : "";
+
   return (
     <Card variant="outlined" sx={{ borderRadius: 4 }}>
       <CardContent sx={{ "&:last-child": { pb: "19px" } }}>
@@ -46,7 +53,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
           </Box>
 
           <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-            {task.dueDate ? `due ${task.dueDate}` : ""}
+            {formattedDueDate ? `до ${formattedDueDate}` : ""}
           </Typography>
 
           <Stack direction="row" spacing={1}>
@@ -56,7 +63,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
               sx={{ borderRadius: 1, textTransform: "none" }}
               onClick={() => onEdit(task.id)}
             >
-              Edit
+              Редактировать
             </Button>
             <Button
               variant="outlined"
@@ -64,7 +71,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
               sx={{ borderRadius: 1, textTransform: "none" }}
               onClick={() => onDelete(task.id)}
             >
-              Delete
+              Удалить
             </Button>
           </Stack>
         </Box>

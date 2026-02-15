@@ -29,39 +29,39 @@ export function TasksToolbar({
           <TextField
             value={query}
             onChange={(e) => onChangeQuery(e.target.value)}
-            label="Search"
-            placeholder="Search tasks…"
+            label="Поиск"
+            placeholder="Поиск задач…"
             size="small"
             fullWidth
             sx={{ maxWidth: { md: 260 } }}
           />
 
           <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>Filter</InputLabel>
-            <Select value={filter} label="Filter" onChange={(e) => onChangeFilter(e.target.value as Filter)}>
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="active">Active</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
+            <InputLabel>Фильтр</InputLabel>
+            <Select value={filter} label="Фильтр" onChange={(e) => onChangeFilter(e.target.value as Filter)}>
+              <MenuItem value="all">Все</MenuItem>
+              <MenuItem value="active">Активные</MenuItem>
+              <MenuItem value="done">Выполненные</MenuItem>
             </Select>
           </FormControl>
 
           <FormControl size="small" sx={{ minWidth: 160 }}>
-            <InputLabel>Sort</InputLabel>
-            <Select value={sort} label="Sort" onChange={(e) => onChangeSort(e.target.value as Sort)}>
-              <MenuItem value="newest">Newest</MenuItem>
-              <MenuItem value="oldest">Oldest</MenuItem>
-              <MenuItem value="priority">Priority</MenuItem>
+            <InputLabel>Сортировка</InputLabel>
+            <Select value={sort} label="Сортировка" onChange={(e) => onChangeSort(e.target.value as Sort)}>
+              <MenuItem value="newest">Сначала новые</MenuItem>
+              <MenuItem value="oldest">Сначала старые</MenuItem>
+              <MenuItem value="priority">По приоритету</MenuItem>
             </Select>
           </FormControl>
 
           <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-            {total} tasks
+            {total} задач
           </Typography>
 
           <Box sx={{ flex: 1 }} />
 
           <Button variant="contained" onClick={onAdd} sx={{ borderRadius: 1, ml: 0, textTransform: "none" }}>
-            + Add task
+            + Добавить задачу
           </Button>
         </Stack>
       </CardContent>

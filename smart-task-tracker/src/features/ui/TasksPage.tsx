@@ -39,10 +39,10 @@ export function TasksPage() {
       <Container maxWidth="md">
         <Box sx={{ mb: 2 }}>
           <Typography variant="h4" fontWeight={600}>
-            Smart Task Tracker
+            Умный трекер задач
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Keep tasks clear and manageable
+            Держите задачи в порядке и под контролем
           </Typography>
         </Box>
 
