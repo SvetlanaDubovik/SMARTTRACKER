@@ -5,6 +5,7 @@ export type Task = {
   title: string;
   done: boolean;
   priority: TaskPriority;
+  createdAt: number; // unix ms
   dueDate?: string; // YYYY-MM-DD
 };
 

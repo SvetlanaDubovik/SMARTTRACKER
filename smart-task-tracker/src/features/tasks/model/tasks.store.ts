@@ -30,9 +30,22 @@ function uid() {
 }
 
 const seedTasks: Task[] = [
-  { id: uid(), title: "Вернуть React-руки", done: false, priority: "high", dueDate: "2026-02-10" },
-  { id: uid(), title: "Добавить фильтры и поиск", done: false, priority: "medium" },
-  { id: uid(), title: "Сделать README", done: true, priority: "low" },
+  {
+    id: uid(),
+    title: "Вернуть React-руки",
+    done: false,
+    priority: "high",
+    createdAt: Date.now() - 2 * 60_000,
+    dueDate: "2026-02-10",
+  },
+  {
+    id: uid(),
+    title: "Добавить фильтры и поиск",
+    done: false,
+    priority: "medium",
+    createdAt: Date.now() - 60_000,
+  },
+  { id: uid(), title: "Сделать README", done: true, priority: "low", createdAt: Date.now() },
 ];
 
 export const useTasksStore = create<TasksState>((set, get) => ({
@@ -74,7 +87,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     }
 
     // create
-    const newTask: Task = { id: uid(), done: false, ...values };
+    const newTask: Task = { id: uid(), done: false, createdAt: Date.now(), ...values };
     set({ tasks: [newTask, ...tasks] });
   },
 }));
@@ -89,11 +102,14 @@ export function selectVisibleTasks(s: Pick<TasksState, "tasks" | "filter" | "sor
   const q = s.query.trim().toLowerCase();
   if (q) list = list.filter((t) => t.title.toLowerCase().includes(q));
 
-  if (s.sort === "priority") {
+  if (s.sort === "newest") {
+    list = [...list].sort((a, b) => b.createdAt - a.createdAt);
+  } else if (s.sort === "oldest") {
+    list = [...list].sort((a, b) => a.createdAt - b.createdAt);
+  } else if (s.sort === "priority") {
     const rank = { high: 0, medium: 1, low: 2 } as const;
     list = [...list].sort((a, b) => rank[a.priority] - rank[b.priority]);
   }
 
-  // Примечание: new/oldest лучше делать по createdAt. Пока оставим стабильный порядок.
   return list;
 }
