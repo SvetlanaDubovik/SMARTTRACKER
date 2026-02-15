@@ -10,19 +10,24 @@ type Props = {
 };
 
 export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props) {
-    const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [title, setTitle] = useState(initialValues?.title ?? "");
   const [priority, setPriority] = useState<TaskPriority>(initialValues?.priority ?? "medium");
   const [dueDate, setDueDate] = useState<string>(initialValues?.dueDate ?? "");
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
+    now.getDate()
+  ).padStart(2, "0")}`;
 
-const handleSubmit = () => {
-  if (!title.trim()) return;
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    if (dueDate && dueDate < today) return;
 
-  onSubmit({
-    title: title.trim(),
-    priority,
-    dueDate: dueDate || undefined,
-  });
-};
+    onSubmit({
+      title: title.trim(),
+      priority,
+      dueDate: dueDate || undefined,
+    });
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -47,6 +52,7 @@ const handleSubmit = () => {
             InputLabelProps={{ shrink: true }}
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+            inputProps={{ min: today }}
           />
         </Stack>
       </DialogContent>
