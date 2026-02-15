@@ -1,4 +1,19 @@
-import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import type { Filter, Sort } from "../../shared/types/task";
 import { getTasksWord } from "../../shared/lib/getTasksWord";
 
@@ -35,6 +50,15 @@ export function TasksToolbar({
             size="small"
             fullWidth
             sx={{ maxWidth: { md: 250 } }}
+            InputProps={{
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton size="small" edge="end" aria-label="Очистить поиск" onClick={() => onChangeQuery("")}>
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            }}
           />
 
           <FormControl size="small" sx={{ minWidth: 140 }}>
