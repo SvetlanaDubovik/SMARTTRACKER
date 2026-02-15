@@ -13,14 +13,35 @@ export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [priority, setPriority] = useState<TaskPriority>(initialValues?.priority ?? "medium");
   const [dueDate, setDueDate] = useState<string>(initialValues?.dueDate ?? "");
+  const [titleError, setTitleError] = useState("");
+  const [dueDateError, setDueDateError] = useState("");
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
     now.getDate()
   ).padStart(2, "0")}`;
 
   const handleSubmit = () => {
-    if (!title.trim()) return;
-    if (dueDate && dueDate < today) return;
+    let hasError = false;
+
+    if (!title.trim()) {
+      setTitleError("Введите название задачи");
+      hasError = true;
+    } else {
+      setTitleError("");
+    }
+
+    if (dueDate) {
+      if (dueDate < today) {
+        setDueDateError("Дата не может быть меньше сегодняшней");
+        hasError = true;
+      } else {
+        setDueDateError("");
+      }
+    } else {
+      setDueDateError("");
+    }
+
+    if (hasError) return;
 
     onSubmit({
       title: title.trim(),
@@ -35,7 +56,18 @@ export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props
 
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <TextField label="Название" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth required />
+          <TextField
+            label="Название"
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (titleError) setTitleError("");
+            }}
+            error={Boolean(titleError)}
+            helperText={titleError}
+            fullWidth
+            required
+          />
 
           <FormControl fullWidth>
             <InputLabel>Приоритет</InputLabel>
@@ -51,7 +83,12 @@ export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props
             label="До"
             InputLabelProps={{ shrink: true }}
             value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
+            onChange={(e) => {
+              setDueDate(e.target.value);
+              if (dueDateError) setDueDateError("");
+            }}
+            error={Boolean(dueDateError)}
+            helperText={dueDateError}
             inputProps={{ min: today }}
           />
         </Stack>

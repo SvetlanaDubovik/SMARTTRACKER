@@ -1,5 +1,6 @@
 import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import type { Filter, Sort } from "../../shared/types/task";
+import { getTasksWord } from "../../shared/lib/getTasksWord";
 
 type Props = {
   filter: Filter;
@@ -33,7 +34,7 @@ export function TasksToolbar({
             placeholder="Поиск задач…"
             size="small"
             fullWidth
-            sx={{ maxWidth: { md: 260 } }}
+            sx={{ maxWidth: { md: 250 } }}
           />
 
           <FormControl size="small" sx={{ minWidth: 140 }}>
@@ -55,13 +56,13 @@ export function TasksToolbar({
           </FormControl>
 
           <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-            {total} задач
+            {total} {getTasksWord(total)}
           </Typography>
 
           <Box sx={{ flex: 1 }} />
 
           <Button variant="contained" onClick={onAdd} sx={{ borderRadius: 1, ml: 0, textTransform: "none" }}>
-            + Добавить задачу
+            + Добавить 
           </Button>
         </Stack>
       </CardContent>
