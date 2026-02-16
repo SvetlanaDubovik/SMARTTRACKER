@@ -3,6 +3,7 @@ import EditOutlined from "@mui/icons-material/EditOutlined";
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import type { Task } from "../../shared/types/task";
 import { priorityChip } from "../../shared/lib/priorityChip";
+import { formatDueDate } from "../../shared/lib/formatDueDate";
 
 type Props = {
   task: Task;
@@ -12,12 +13,7 @@ type Props = {
 };
 
 export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
-  const formattedDueDate = task.dueDate
-    ? (() => {
-        const [year, month, day] = task.dueDate.split("-");
-        return `${day}-${month}-${year}`;
-      })()
-    : "";
+  const formattedDueDate = formatDueDate(task.dueDate);
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 4 }}>
