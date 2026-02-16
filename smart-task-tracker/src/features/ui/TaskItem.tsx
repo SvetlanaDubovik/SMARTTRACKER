@@ -2,12 +2,7 @@ import { Box, Button, Card, CardContent, Checkbox, Chip, Stack, Typography } fro
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import type { Task } from "../../shared/types/task";
-
-function priorityChip(priority: Task["priority"]) {
-  if (priority === "high") return { label: "высокий", color: "error" as const, variant: "filled" as const };
-  if (priority === "medium") return { label: "средний", color: "warning" as const, variant: "filled" as const };
-  return { label: "низкий", color: "success" as const, variant: "filled" as const };
-}
+import { priorityChip } from "../../shared/lib/priorityChip";
 
 type Props = {
   task: Task;
@@ -52,7 +47,11 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
             <Chip size="small" sx={{ borderRadius: 1 }} {...priorityChip(task.priority)} />
           </Box>
 
-          <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ whiteSpace: "nowrap" }}
+          >
             {formattedDueDate ? `до ${formattedDueDate}` : ""}
           </Typography>
 
