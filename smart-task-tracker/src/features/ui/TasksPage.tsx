@@ -46,7 +46,7 @@ export function TasksPage() {
           </Typography>
         </Box>
 
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 2, position: "sticky", top: 8, zIndex: 10, bgcolor: "grey.50", py: 0.5 }}>
           <TasksToolbar
             filter={filter}
             sort={sort}
