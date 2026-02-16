@@ -80,7 +80,7 @@ export function TaskFormDialog({ open, initialValues, onClose, onSubmit }: Props
 
           <TextField
             type="date"
-            label="До"
+            label="Срок:"
             InputLabelProps={{ shrink: true }}
             value={dueDate}
             onChange={(e) => {

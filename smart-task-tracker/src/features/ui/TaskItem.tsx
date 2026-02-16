@@ -48,7 +48,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: Props) {
             color="text.secondary"
             sx={{ whiteSpace: "nowrap" }}
           >
-            {formattedDueDate ? `до ${formattedDueDate}` : ""}
+            {formattedDueDate ? `Срок: ${formattedDueDate}` : ""}
           </Typography>
 
           <Stack direction="row" spacing={1}>

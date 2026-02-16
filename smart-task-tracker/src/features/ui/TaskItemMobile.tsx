@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, Checkbox, Chip, Stack, Typography } from "@mui/material";
+import { Box, Card, CardContent, Checkbox, Chip, IconButton, Stack, Typography } from "@mui/material";
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import type { Task } from "../../shared/types/task";
@@ -24,7 +24,7 @@ export function TaskItemMobile({ task, onToggle, onEdit, onDelete }: Props) {
             <Box sx={{ flex: 1 }} />
             {formattedDueDate ? (
               <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-                до {formattedDueDate}
+                Срок: {formattedDueDate}
               </Typography>
             ) : null}
           </Stack>
@@ -55,24 +55,25 @@ export function TaskItemMobile({ task, onToggle, onEdit, onDelete }: Props) {
               </Typography>
             </Box>
           </Stack>
+          <Box sx={{ borderBottom: "1px solid", borderColor: "divider" }} />
 
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              startIcon={<EditOutlined />}
-              sx={{ borderRadius: 1, textTransform: "none", flex: 1 }}
+          <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+            <IconButton
+              size="small"
+              sx={{ color: "primary.main" }}
+              aria-label="Редактировать"
               onClick={() => onEdit(task.id)}
             >
-              Редактировать
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<DeleteOutline />}
-              sx={{ borderRadius: 1, textTransform: "none", flex: 1 }}
+              <EditOutlined />
+            </IconButton>
+            <IconButton
+              size="small"
+              sx={{ color: "error.main" }}
+              aria-label="Удалить"
               onClick={() => onDelete(task.id)}
             >
-              Удалить
-            </Button>
+              <DeleteOutline />
+            </IconButton>
           </Stack>
         </Stack>
       </CardContent>
