@@ -1,8 +1,11 @@
 import { create } from "zustand";
+import { getTasks } from "../../../api/tasks.ts";
 import type { Filter, Sort, Task, TaskFormValues } from "../../../shared/types/task.ts";
 
 type TasksState = {
   tasks: Task[];
+  isLoading: boolean;
+  loadError: string | null;
   filter: Filter;
   sort: Sort;
   query: string;
@@ -23,6 +26,7 @@ type TasksState = {
   toggleDone: (id: string) => void;
   deleteTask: (id: string) => void;
   submitTask: (values: TaskFormValues) => void;
+  loadTasks: () => Promise<void>;
 };
 
 function uid() {
@@ -50,6 +54,8 @@ const seedTasks: Task[] = [
 
 export const useTasksStore = create<TasksState>((set, get) => ({
   tasks: seedTasks,
+  isLoading: false,
+  loadError: null,
   filter: "all",
   sort: "newest",
   query: "",
@@ -89,6 +95,17 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     // create
     const newTask: Task = { id: uid(), done: false, createdAt: Date.now(), ...values };
     set({ tasks: [newTask, ...tasks] });
+  },
+
+  loadTasks: async () => {
+    set({ isLoading: true, loadError: null });
+    try {
+      const data = (await getTasks({})) as Task[];
+      set({ tasks: data, isLoading: false });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load tasks";
+      set({ isLoading: false, loadError: message });
+    }
   },
 }));
 

@@ -1,5 +1,5 @@
 import { Box, Button, Container, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTasksStore, selectVisibleTasks } from "../tasks/model/tasks.store";
 import { TasksToolbar } from "./TasksToolbar";
 import { TasksToolbarMobile } from "./TasksToolbarMobile";
@@ -27,6 +27,7 @@ export function TasksPage() {
   const openEdit = useTasksStore((s) => s.openEdit);
   const closeDialog = useTasksStore((s) => s.closeDialog);
   const submitTask = useTasksStore((s) => s.submitTask);
+  const loadTasks = useTasksStore((s) => s.loadTasks);
 
   // tasks actions
   const toggleDone = useTasksStore((s) => s.toggleDone);
@@ -37,6 +38,10 @@ export function TasksPage() {
   const visible = useMemo(() => selectVisibleTasks({ tasks, filter, sort, query }), [tasks, filter, sort, query]);
 
   const editingTask = tasks.find((t) => t.id === editingId) ?? null;
+
+  useEffect(() => {
+    void loadTasks();
+  }, [loadTasks]);
 
   return (
     <Box sx={{ minHeight: visible.length !== 0 ? "100vh" : "100%", bgcolor: "grey.50", py: 4 }}>
